@@ -1,0 +1,208 @@
+options:
+  parameters:
+    author: asus
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: dac_test
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Not titled yet
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: cutoff
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: '20000'
+    value: '2000'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [336, 12.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '100000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [792, 252.0]
+    rotation: 0
+    state: enabled
+- name: blocks_wavfile_source_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: C:\pyprojects\arduino\01 Shame Mahtab.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '1'
+    repeat: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [112, 244.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np\nfrom gnuradio import gr\nimport sys\n\nsys.path.insert(0,\
+      \ r\"C:\\pyprojects\\arduino\")\n\nfrom wemos_dac import WemosDAC\n\n\nclass\
+      \ blk(gr.sync_block):\n\n    def __init__(\n        self,\n        port=\"COM5\"\
+      ,\n        baudrate=2000000,\n        sample_rate=100000,\n        buffer_packets=20,\n\
+      \        ack_timeout=2.0\n    ):\n        gr.sync_block.__init__(\n        \
+      \    self,\n            name=\"Wemos DAC Sink\",\n            in_sig=[np.float32],\n\
+      \            out_sig=None\n        )\n\n        self.port = port\n        self.baudrate\
+      \ = int(baudrate)\n        self.sample_rate = int(sample_rate)\n        self.buffer_packets\
+      \ = int(buffer_packets)\n        self.ack_timeout = float(ack_timeout)\n\n \
+      \       self.dac = None\n        self.work_count = 0\n\n    def start(self):\n\
+      \n        print(\"Wemos DAC: starting...\", flush=True)\n\n        self.dac\
+      \ = WemosDAC(\n            port=self.port,\n            baudrate=self.baudrate,\n\
+      \            sample_rate=self.sample_rate,\n            buffer_packets=self.buffer_packets,\n\
+      \            ack_timeout=self.ack_timeout\n        )\n\n        self.dac.start()\n\
+      \n        print(\"Wemos DAC: started.\", flush=True)\n\n        return gr.sync_block.start(self)\n\
+      \n    def work(self, input_items, output_items):\n\n        samples = input_items[0]\n\
+      \n        self.dac.write(samples)\n\n        self.work_count += 1\n\n      \
+      \  # \u0641\u0642\u0637 \u0647\u0631 100 \u0628\u0627\u0631 \u06CC\u06A9 \u067E\
+      \u06CC\u0627\u0645\n        if self.work_count % 100 == 0:\n            print(\n\
+      \                \"Wemos DAC: received samples:\",\n                self.work_count,\n\
+      \                flush=True\n            )\n\n        return len(samples)\n\n\
+      \    def stop(self):\n\n        print(\"Wemos DAC: stopping...\", flush=True)\n\
+      \n        if self.dac is not None:\n\n            try:\n                self.dac.finish()\n\
+      \            except Exception as e:\n                print(\"Wemos DAC finish\
+      \ error:\", e)\n\n            self.dac.close()\n            self.dac = None\n\
+      \n        print(\"Wemos DAC: stopped.\", flush=True)\n\n        return gr.sync_block.stop(self)"
+    ack_timeout: '2.0'
+    affinity: ''
+    alias: ''
+    baudrate: '2000000'
+    buffer_packets: '20'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    port: '"COM5"'
+    sample_rate: samp_rate
+  states:
+    _io_cache: ('Wemos DAC Sink', 'blk', [('port', "'COM5'"), ('baudrate', '2000000'),
+      ('sample_rate', '100000'), ('buffer_packets', '20'), ('ack_timeout', '2.0')],
+      [('0', 'float', 1)], [], '', ['ack_timeout', 'baudrate', 'buffer_packets', 'port',
+      'sample_rate'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [984, 220.0]
+    rotation: 0
+    state: enabled
+- name: low_pass_filter_0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: cutoff
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: interp_fir_filter_fff
+    width: '1000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [584, 212.0]
+    rotation: 0
+    state: enabled
+- name: rational_resampler_xxx_0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '441'
+    fbw: '0'
+    interp: '1000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [376, 228.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [blocks_multiply_const_vxx_0, '0', epy_block_0, '0']
+- [blocks_wavfile_source_0, '0', rational_resampler_xxx_0, '0']
+- [low_pass_filter_0, '0', blocks_multiply_const_vxx_0, '0']
+- [rational_resampler_xxx_0, '0', low_pass_filter_0, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0
